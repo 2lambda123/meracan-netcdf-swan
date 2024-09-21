@@ -1,17 +1,18 @@
-import os
-import shutil
 import json
-import uuid
-import numpy as np
-from tqdm import tqdm
-from scipy.io import loadmat
-from s3netcdf import S3NetCDF
-from datetime import datetime
+import os
 import re
+import shutil
 import time
+import uuid
+from datetime import datetime
+
 import boto3
-from botocore.errorfactory import ClientError
+import numpy as np
 from boto3.s3.transfer import TransferConfig
+from botocore.errorfactory import ClientError
+from s3netcdf import S3NetCDF
+from scipy.io import loadmat
+from tqdm import tqdm
 
 
 class NetCDFSWAN(S3NetCDF):

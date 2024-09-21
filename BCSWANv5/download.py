@@ -1,10 +1,11 @@
 import os
 import shutil
 import uuid
+
 import boto3
-from tqdm import tqdm
-from botocore.errorfactory import ClientError
 from boto3.s3.transfer import TransferConfig
+from botocore.errorfactory import ClientError
+from tqdm import tqdm
 
 cacheLocation = "../data"
 s3Prefix = "partitionSWANv6"

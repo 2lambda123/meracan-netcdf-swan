@@ -1,7 +1,9 @@
-import os
 import json
-from netcdfswan import NetCDFSWAN
+import os
+
 import numpy as np
+
+from netcdfswan import NetCDFSWAN
 
 if __name__ == "__main__":
     # swanFolder='../nvme'

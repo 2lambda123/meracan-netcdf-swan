@@ -1,12 +1,13 @@
-import os
 import json
-import numpy as np
-from tqdm import tqdm
-from scipy.io import loadmat
-from s3netcdf import S3NetCDF
-from datetime import datetime
+import os
 import re
 import time
+from datetime import datetime
+
+import numpy as np
+from s3netcdf import S3NetCDF
+from scipy.io import loadmat
+from tqdm import tqdm
 
 
 class NetCDFSWAN(S3NetCDF):
