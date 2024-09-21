@@ -13,7 +13,7 @@ from tqdm import tqdm
 class NetCDFSWAN(S3NetCDF):
     """Creates and stores partitioned netcdf (.nc) files from SWAN data into a local cache and
     uploads them to an Amazon S3 bucket, using the s3-netcdf package.
-    
+
     This is the Swan output structure.
     The year and month folders are saved as keys.
     `-- SWAN_DATA
@@ -30,7 +30,7 @@ class NetCDFSWAN(S3NetCDF):
                     |-- line_n.spc
                     |-- QP.mat
                     :
-    
+
                     :
                     |-- hotspots.spc
                     `-- TPS.mat
@@ -45,13 +45,13 @@ class NetCDFSWAN(S3NetCDF):
             |-- .ele
             |-- .bot
             `-- .node
-    
+
     The Mesh folder holds latitudes, longitudes, and bathymetry of all the nodes, and other triangle mesh information.
     The Matlab (.mat) files in the 'results' folder of each month holds variable information for all of the nodes,
     as well as spectra information.
 
 
-    
+
     """
 
     def __init__(self, obj, logger=None):
@@ -161,9 +161,9 @@ class NetCDFSWAN(S3NetCDF):
         """Prepare input json object to load into NetCDF2D.
         This merge a few json together and extract certain info into metadata.
 
-        :param file: 
-        :param swanFolder: 
-        :param **kwargs: 
+        :param file:
+        :param swanFolder:
+        :param **kwargs:
 
         """
         obj = NetCDFSWAN.load(file)
@@ -218,7 +218,7 @@ class NetCDFSWAN(S3NetCDF):
     def printMatKeys(swanFolder, year=2014):
         """Simple function to print the keys within a matlab file
 
-        :param swanFolder: 
+        :param swanFolder:
         :param year:  (Default value = 2014)
 
         """
@@ -240,7 +240,7 @@ class NetCDFSWAN(S3NetCDF):
     def printSpcShape(swanFolder, year=2014):
         """Simple function to print shape of the spectra files
 
-        :param swanFolder: 
+        :param swanFolder:
         :param year:  (Default value = 2014)
 
         """
@@ -269,7 +269,7 @@ class NetCDFSWAN(S3NetCDF):
         The code is using one of the folder output to extract the .spc files.
         The code calculates the number of .spc files/stations and the number of points within the file.
 
-        :param swanFolder: 
+        :param swanFolder:
         :param print_meta:  (Default value = False)
         :param year:  (Default value = 2014)
         :param month:  (Default value = 1)
@@ -307,9 +307,9 @@ class NetCDFSWAN(S3NetCDF):
     def getFiles(swanFolder):
         """Get all output files from swanFolder and save it in a dictionnary.
 
-        :param swanFolder: 
+        :param swanFolder:
 
-        
+
         """
         files = []
         for r, d, f in os.walk(swanFolder):
@@ -340,9 +340,9 @@ class NetCDFSWAN(S3NetCDF):
     def load(filepath, *args, **kwargs):
         """Loading file
 
-        :param filepath: 
-        :param *args: 
-        :param **kwargs: 
+        :param filepath:
+        :param *args:
+        :param **kwargs:
 
         """
         ext = os.path.splitext(filepath)[1]
@@ -367,7 +367,7 @@ class NetCDFSWAN(S3NetCDF):
     def loadJSON(filepath):
         """Loading json file
 
-        :param filepath: 
+        :param filepath:
 
         """
         with open(filepath, "r") as f:
@@ -377,7 +377,7 @@ class NetCDFSWAN(S3NetCDF):
     def loadBot(filepath):
         """Loading .bot file
 
-        :param filepath: 
+        :param filepath:
 
         """
         with open(filepath, "r") as f:
@@ -389,7 +389,7 @@ class NetCDFSWAN(S3NetCDF):
         """Loading .node file
         Remove first row (only has nnodes) and selecting 1,2 columns(x,y)
 
-        :param filepath: 
+        :param filepath:
 
         """
         with open(filepath, "r") as f:
@@ -402,7 +402,7 @@ class NetCDFSWAN(S3NetCDF):
         """Loading .ele file.Remove first row (only has nelem).
         Ignoring first column (counter) and converting the index instead of id by substracting 1.
 
-        :param filepath: 
+        :param filepath:
 
         """
         with open(filepath, "r") as f:
@@ -418,10 +418,10 @@ class NetCDFSWAN(S3NetCDF):
         Need to determine the number of unique datetime and unique variable since the keys might contain multiple variable (e.g. Wind).
         We assume the same number of nodes for each variable.
 
-        :param filepath: 
+        :param filepath:
         :param return_datetime:  (Default value = False)
 
-        
+
         """
         matfile = loadmat(filepath)
 
@@ -478,13 +478,13 @@ class NetCDFSWAN(S3NetCDF):
     def loadSpc(filepath, return_metadata=False, monthOnly=None):
         """Aggregates all spc files (stored as .spc instead of .mat) for one month.
         Each datum in the block is multiplied with that block's FACTOR.
-        
+
         number of timesteps:
           - equal to month, same as mat files.
-        
+
         number of FACTOR blocks for that timestep:
           - equal to number of lat+lon nodes (e.g. 22 pairs)
-        
+
         create table for that FACTOR block:
           - columns are each direction "dir" (e.g. 36 across)
           - rows are each frequency "afreq" (e.g. 34 down)
@@ -496,7 +496,7 @@ class NetCDFSWAN(S3NetCDF):
         :param return_metadata:  (Default value = False)
         :param monthOnly:  (Default value = None)
 
-        
+
         """
         re_spcdate = re.compile(r"^20[0-9]{6}[.][0-9]{6}$")
 
@@ -615,7 +615,7 @@ class NetCDFSWAN(S3NetCDF):
         def update(name):
             """
 
-            :param name: 
+            :param name:
 
             """
             if pbar0:
@@ -625,7 +625,7 @@ class NetCDFSWAN(S3NetCDF):
         def update1(name):
             """
 
-            :param name: 
+            :param name:
 
             """
             if pbar:
@@ -692,8 +692,8 @@ class NetCDFSWAN(S3NetCDF):
     def getDatetimeIndex(_datetime, dt):
         """Find first and last datetime index.
 
-        :param _datetime: 
-        :param dt: 
+        :param _datetime:
+        :param dt:
 
         """
         startDate = dt[0]
@@ -709,7 +709,7 @@ class NetCDFSWAN(S3NetCDF):
         These "files"/groups needs to be created using the original output files "s".
         The "uploadFiles" will be grouped using gnode=50
 
-        :param groupName: 
+        :param groupName:
         :param partName:  (Default value = "")
 
         """
@@ -766,8 +766,8 @@ class NetCDFSWAN(S3NetCDF):
     def removeUploadedFile(self, groupName, groups):
         """Remove file from json since it's been uploaded
 
-        :param groupName: 
-        :param groups: 
+        :param groupName:
+        :param groups:
 
         """
         if not isinstance(groups, list):
@@ -779,7 +779,7 @@ class NetCDFSWAN(S3NetCDF):
     def addErrorFile(self, file):
         """Add file to the error json file.
 
-        :param file: 
+        :param file:
 
         """
         self.errorlist.append(file["path"])
@@ -802,7 +802,7 @@ class NetCDFSWAN(S3NetCDF):
     def uploadPt(self, varName):
         """
 
-        :param varName: 
+        :param varName:
 
         """
         self._uploadPartition("pt", varName)
@@ -810,7 +810,7 @@ class NetCDFSWAN(S3NetCDF):
     def uploadPtU(self, varName):
         """
 
-        :param varName: 
+        :param varName:
 
         """
         self._uploadPartitionUpload("pt", varName)
@@ -820,7 +820,7 @@ class NetCDFSWAN(S3NetCDF):
         This is relatively simple since it's uploading directly from Matlab output files to S3.
         Uploading one file at a time.
 
-        :param groupName: 
+        :param groupName:
 
         """
         showProgress = self.showProgress
@@ -887,7 +887,7 @@ class NetCDFSWAN(S3NetCDF):
         Create memory array to store matlab results for each variable (need to temporary save the results to memory)
         Upload for each variable
 
-        :param groupName: 
+        :param groupName:
 
         """
         showProgress = self.showProgress
@@ -975,9 +975,9 @@ class NetCDFSWAN(S3NetCDF):
           - (partitions will need additional dimension in the numpy memmap shape)
         Upload for each variable
 
-        :param groupName: 
-        :param vname: 
-        :param ipart: 
+        :param groupName:
+        :param vname:
+        :param ipart:
 
         """
         showProgress = self.showProgress
@@ -1024,8 +1024,8 @@ class NetCDFSWAN(S3NetCDF):
     def _uploadPartitionUpload(self, groupName, vname):
         """
 
-        :param groupName: 
-        :param vname: 
+        :param groupName:
+        :param vname:
 
         """
         nnode = self.nnode

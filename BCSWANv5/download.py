@@ -18,7 +18,7 @@ months = ["{0:02d}".format(x) for x in range(1, 13)]
 def getKeys(variable):
     """
 
-    :param variable: 
+    :param variable:
 
     """
     keys = []
@@ -33,7 +33,7 @@ def getKeys(variable):
 def getKey(self, filepath):
     """
 
-    :param filepath: 
+    :param filepath:
 
     """
     path = os.path.relpath(filepath, cacheLocation)
@@ -43,7 +43,7 @@ def getKey(self, filepath):
 def getCachePath(key):
     """
 
-    :param key: 
+    :param key:
 
     """
     path = os.path.relpath(key, s3Prefix)
@@ -53,13 +53,13 @@ def getCachePath(key):
 def hook(t):
     """
 
-    :param t: 
+    :param t:
 
     """
     def inner(bytes_amount):
         """
 
-        :param bytes_amount: 
+        :param bytes_amount:
 
         """
         t.update(bytes_amount)
@@ -70,7 +70,7 @@ def hook(t):
 def downloadWithProgress(key):
     """
 
-    :param key: 
+    :param key:
 
     """
     session = boto3.Session(profile_name="jcousineau")
