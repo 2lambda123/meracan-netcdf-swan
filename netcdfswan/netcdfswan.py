@@ -95,7 +95,8 @@ class NetCDFSWAN(S3NetCDF):
         startDate = info["metadata"].get("startDate")
         timeStep = info["metadata"].get("timeStep(h)")
         self.startDate = startDate = np.datetime64(startDate)
-        self.datetime = startDate + np.arange(ntime) * np.timedelta64(timeStep, "h")
+        self.datetime = startDate + np.arange(ntime) * np.timedelta64(
+            timeStep, "h")
 
         # Load station index table
         # Each station (.spc) file needs a specific Id
@@ -118,7 +119,8 @@ class NetCDFSWAN(S3NetCDF):
 
         # Combine matfile names and variables of partition files
         pt_gvar = set(info["groups"]["pt"]["variables"].keys())
-        pt_intr = list(set(dict(self.mvariables.items()).keys()).intersection(pt_gvar))
+        pt_intr = list(
+            set(dict(self.mvariables.items()).keys()).intersection(pt_gvar))
         self.ptList = [
             v["fileKey"] for k, v in self.mvariables.items() if k in pt_gvar
         ] + pt_intr
@@ -142,11 +144,10 @@ class NetCDFSWAN(S3NetCDF):
         files = NetCDFSWAN.getFiles(swanFolder)
         return list(
             filter(
-                lambda file: file["ext"] == ".mat"
-                and file["name"] not in self.blacklist,
+                lambda file: file["ext"] == ".mat" and file["name"] not in self
+                .blacklist,
                 files,
-            )
-        )
+            ))
 
     @property
     def spcFiles(self):
@@ -157,8 +158,9 @@ class NetCDFSWAN(S3NetCDF):
         files = NetCDFSWAN.getFiles(swanFolder)
         files = list(filter(lambda file: file["ext"] == ".spc", files))
         return list(
-            sorted(files, key=lambda file: (file["year"], file["month"], file["name"]))
-        )
+            sorted(files,
+                   key=lambda file:
+                   (file["year"], file["month"], file["name"])))
 
     @staticmethod
     def prepareInputJSON(file, swanFolder, **kwargs):
@@ -176,17 +178,13 @@ class NetCDFSWAN(S3NetCDF):
 
         # Load and merge json files BCWABv5.variables.json/BCWABv5.specvariables.json
         obj["nca"]["groups"]["s"]["variables"] = f1 = NetCDFSWAN.load(
-            os.path.join(jsonFolder, obj["nca"]["groups"]["s"]["variables"])
-        )
+            os.path.join(jsonFolder, obj["nca"]["groups"]["s"]["variables"]))
         obj["nca"]["groups"]["t"]["variables"] = f2 = NetCDFSWAN.load(
-            os.path.join(jsonFolder, obj["nca"]["groups"]["t"]["variables"])
-        )
+            os.path.join(jsonFolder, obj["nca"]["groups"]["t"]["variables"]))
         obj["nca"]["groups"]["spc"]["variables"] = f3 = NetCDFSWAN.load(
-            os.path.join(jsonFolder, obj["nca"]["groups"]["spc"]["variables"])
-        )
+            os.path.join(jsonFolder, obj["nca"]["groups"]["spc"]["variables"]))
         obj["nca"]["groups"]["pt"]["variables"] = f4 = NetCDFSWAN.load(
-            os.path.join(jsonFolder, obj["nca"]["groups"]["pt"]["variables"])
-        )
+            os.path.join(jsonFolder, obj["nca"]["groups"]["pt"]["variables"]))
 
         # Keep variables since we need to extract "matlab name" keys
         variables = {**f1, **f2}
@@ -205,16 +203,12 @@ class NetCDFSWAN(S3NetCDF):
         if obj["nca"]["dimensions"]["nsnode"] != meta["nsnode"]:
             raise Exception(
                 "Please check nsnode in json file. {} to {}".format(
-                    obj["nca"]["dimensions"]["nsnode"], meta["nsnode"]
-                )
-            )
+                    obj["nca"]["dimensions"]["nsnode"], meta["nsnode"]))
 
         if obj["nca"]["dimensions"]["nstation"] != meta["nstation"]:
             raise Exception(
                 "Please check nstation in json file. {} to {}".format(
-                    obj["nca"]["dimensions"]["nstation"], meta["nstation"]
-                )
-            )
+                    obj["nca"]["dimensions"]["nstation"], meta["nstation"]))
 
         return obj
 
@@ -229,14 +223,11 @@ class NetCDFSWAN(S3NetCDF):
         files = NetCDFSWAN.getFiles(swanFolder)
         files = list(
             filter(
-                lambda file: "year" in file
-                and file["year"] == year
-                and "month" in file
-                and file["month"] == 1
-                and file["ext"] == ".mat",
+                lambda file: "year" in file and file["year"] == year and
+                "month" in file and file["month"] == 1 and file["ext"
+                                                                ] == ".mat",
                 files,
-            )
-        )
+            ))
         for file in files:
             print(NetCDFSWAN.load(file["path"]).keys())
 
@@ -251,23 +242,21 @@ class NetCDFSWAN(S3NetCDF):
         files = NetCDFSWAN.getFiles(swanFolder)
         files = list(
             filter(
-                lambda file: "year" in file
-                and file["year"] == year
-                and "month" in file
-                and file["month"] == 1
-                and file["ext"] == ".spc",
+                lambda file: "year" in file and file["year"] == year and
+                "month" in file and file["month"] == 1 and file["ext"
+                                                                ] == ".spc",
                 files,
-            )
-        )
+            ))
         for file in files:
-            print(
-                "{} - {}".format(
-                    file["name"], NetCDFSWAN.load(file["path"])["spectra"].shape
-                )
-            )
+            print("{} - {}".format(
+                file["name"],
+                NetCDFSWAN.load(file["path"])["spectra"].shape))
 
     @staticmethod
-    def getSpectralStationMetadata(swanFolder, print_meta=False, year=2014, month=1):
+    def getSpectralStationMetadata(swanFolder,
+                                   print_meta=False,
+                                   year=2014,
+                                   month=1):
         """Extract spectralStation MetaData
         Note that this is project specific.
         The code is using one of the folder output to extract the .spc files.
@@ -283,21 +272,23 @@ class NetCDFSWAN(S3NetCDF):
 
         files = list(
             filter(
-                lambda file: "year" in file
-                and "month" in file
-                and file["year"] == year
-                and file["month"] == month
-                and file["ext"] == ".spc",
+                lambda file: "year" in file and "month" in file and file[
+                    "year"] == year and file["month"] == month and file["ext"]
+                == ".spc",
                 files,
-            )
-        )
+            ))
 
         files = sorted(files, key=lambda x: x["name"])
         stations = {}
         isnode = 0
         for i, file in enumerate(files):
-            nlatlng = NetCDFSWAN.load(file["path"], return_metadata=True)["nlatlng"]
-            stations[file["name"]] = {"start": isnode, "end": isnode + nlatlng, "id": i}
+            nlatlng = NetCDFSWAN.load(file["path"],
+                                      return_metadata=True)["nlatlng"]
+            stations[file["name"]] = {
+                "start": isnode,
+                "end": isnode + nlatlng,
+                "id": i
+            }
             isnode += nlatlng
 
         nsnode = isnode
@@ -324,20 +315,20 @@ class NetCDFSWAN(S3NetCDF):
                     month = int(segPath[-2])
                     year = int(segPath[-3])
                     name, ext = os.path.splitext(file)
-                    files.append(
-                        {
-                            "year": year,
-                            "month": month,
-                            "path": os.path.join(r, file),
-                            "name": name,
-                            "ext": ext,
-                        }
-                    )
+                    files.append({
+                        "year": year,
+                        "month": month,
+                        "path": os.path.join(r, file),
+                        "name": name,
+                        "ext": ext,
+                    })
                 else:
                     name, ext = os.path.splitext(file)
-                    files.append(
-                        {"name": name, "ext": ext, "path": os.path.join(r, file)}
-                    )
+                    files.append({
+                        "name": name,
+                        "ext": ext,
+                        "path": os.path.join(r, file)
+                    })
         return files
 
     @staticmethod
@@ -364,8 +355,7 @@ class NetCDFSWAN(S3NetCDF):
             return NetCDFSWAN.loadSpc(filepath, *args, **kwargs)
         else:
             raise Exception(
-                "NetCDFSWAN.load: File type {} is not implemented".format(ext)
-            )
+                "NetCDFSWAN.load: File type {} is not implemented".format(ext))
 
     @staticmethod
     def loadJSON(filepath):
@@ -451,9 +441,12 @@ class NetCDFSWAN(S3NetCDF):
                 ),  # Time
                 dtype="datetime64[s]",
             )
-            timesteps.append(
-                {"key": key, "dt": dt, "name": name, "dtkey": date + "_" + time}
-            )
+            timesteps.append({
+                "key": key,
+                "dt": dt,
+                "name": name,
+                "dtkey": date + "_" + time
+            })
 
         # Sort by datetime
         timesteps = sorted(timesteps, key=lambda x: x["dt"])
@@ -461,7 +454,8 @@ class NetCDFSWAN(S3NetCDF):
         # Get shape of output array (ntime,nnode)
         uniqueDT = np.unique(list(map(lambda x: x["dtkey"], timesteps)))
         uniqueNames = np.unique(list(map(lambda x: x["name"], timesteps)))
-        shape = (len(uniqueDT), *np.squeeze(matfile[next(iter(matfile))]).shape)
+        shape = (len(uniqueDT),
+                 *np.squeeze(matfile[next(iter(matfile))]).shape)
 
         # Initialize dict/array for each variable
         output = {}
@@ -470,7 +464,8 @@ class NetCDFSWAN(S3NetCDF):
 
         # Save array
         for timestep in timesteps:
-            name, key, dtkey = timestep["name"], timestep["key"], timestep["dtkey"]
+            name, key, dtkey = timestep["name"], timestep["key"], timestep[
+                "dtkey"]
             i = np.where(uniqueDT == dtkey)[0][0]
             output[name][i] = np.squeeze(matfile[key])
 
@@ -552,9 +547,8 @@ class NetCDFSWAN(S3NetCDF):
                     month = int(token[4:6])
                     day = int(token[6:8])
                     hour = int(token[9:11])
-                    date_time = np.array(
-                        datetime(year, month, day, hour), dtype="datetime64[s]"
-                    )
+                    date_time = np.array(datetime(year, month, day, hour),
+                                         dtype="datetime64[s]")
                     array = np.zeros((nlonlat, nfreq, ndir), dtype="f8")
                     for i in range(nlonlat):
                         FACTOR = s.readline().split()[0].strip()
@@ -562,30 +556,27 @@ class NetCDFSWAN(S3NetCDF):
                             continue
                         factor = s.readline().split()[0].strip()
                         factor = float(factor)
-                        array[i] = np.array(
-                            [
-                                np.array(
-                                    [
-                                        float(int(d) * factor)
-                                        for d in s.readline().split()
-                                    ]
-                                )
-                                for afreq in range(nfreq)
-                            ]
-                        )
+                        array[i] = np.array([
+                            np.array([
+                                float(int(d) * factor)
+                                for d in s.readline().split()
+                            ]) for afreq in range(nfreq)
+                        ])
 
                     if monthOnly and monthOnly == month:
                         datetimes.append(date_time)
                         output.append(array)
                 else:
                     raise Exception(
-                        f"date mismatch in load_spc(). reading from stopped"
-                    )
+                        f"date mismatch in load_spc(). reading from stopped")
                 line = s.readline()  # ready next line
                 if not line:
                     data = False
 
-            return {"datetime": np.array(datetimes), "spectra": np.array(output)}
+            return {
+                "datetime": np.array(datetimes),
+                "spectra": np.array(output)
+            }
 
     def uploadStatic(self, year=2004, month=1):
         """Upload static files to S3 (.bot,.ele,.bot, datetime,etc...)
@@ -604,14 +595,11 @@ class NetCDFSWAN(S3NetCDF):
         # Get one output folder
         spcFiles = list(
             filter(
-                lambda file: "year" in file
-                and "month" in file
-                and file["year"] == year
-                and file["month"] == month
-                and file["ext"] == ".spc",
+                lambda file: "year" in file and "month" in file and file[
+                    "year"] == year and file["month"] == month and file["ext"]
+                == ".spc",
                 _files,
-            )
-        )
+            ))
 
         if pbar0:
             pbar0.reset(total=5 + 1 + 1 + 2)
@@ -673,9 +661,9 @@ class NetCDFSWAN(S3NetCDF):
             latlng = spc["latlng"]
             self["snodes", "slon", iIndex:eIndex] = latlng[:, 0]
             self["snodes", "slat", iIndex:eIndex] = latlng[:, 1]
-            self["snodes", "stationid", iIndex:eIndex] = (
-                np.zeros(eIndex - iIndex, dtype="int32") + id
-            )
+            self["snodes", "stationid",
+                 iIndex:eIndex] = (np.zeros(eIndex - iIndex, dtype="int32") +
+                                   id)
             update1(name)
         update("spc")
 
@@ -729,9 +717,8 @@ class NetCDFSWAN(S3NetCDF):
 
         # Check if json file already exist.
         # If so, return the json that contains all the files that need to be uploaded.
-        path = os.path.join(
-            self.cacheLocation, self.name, "{}{}.json".format(groupName, partName)
-        )
+        path = os.path.join(self.cacheLocation, self.name,
+                            "{}{}.json".format(groupName, partName))
         if os.path.exists(path):
             uploadFiles = NetCDFSWAN.load(path)
             return files, uploadFiles
@@ -742,24 +729,24 @@ class NetCDFSWAN(S3NetCDF):
             uploadFiles = files
         elif groupName == "s":
             uploadFiles = list(
-                filter(lambda file: file["name"] not in self.ptList, files)
-            )
+                filter(lambda file: file["name"] not in self.ptList, files))
         elif groupName == "t":
             uploadFiles = list(
                 filter(
                     lambda name: name != "spectra" and name not in self.ptList,
                     list(self.variables.keys()),
-                )
-            )
+                ))
             # To remove files with errors
-            files = list(filter(lambda file: file["path"] not in self.errorlist, files))
+            files = list(
+                filter(lambda file: file["path"] not in self.errorlist, files))
         elif groupName == "pt":
             # uploadFiles=["{}".format(i) for i in range(10)]
             uploadFiles = ["{}".format(i) for i in range(1)]
             print(uploadFiles, "here")
 
             # To remove files with errors
-            files = list(filter(lambda file: file["path"] not in self.errorlist, files))
+            files = list(
+                filter(lambda file: file["path"] not in self.errorlist, files))
         else:
             raise Exception("Needs to be s,t,spc,pt")
 
@@ -778,9 +765,8 @@ class NetCDFSWAN(S3NetCDF):
         """
         if not isinstance(groups, list):
             groups = [groups]  # Make sure it's a list
-        path = os.path.join(
-            self.cacheLocation, self.name, "{}{}.json".format(groupName, partName)
-        )
+        path = os.path.join(self.cacheLocation, self.name,
+                            "{}{}.json".format(groupName, partName))
         with open(path, "w") as f:
             json.dump(groups, f)
 
@@ -854,8 +840,8 @@ class NetCDFSWAN(S3NetCDF):
             except Exception as e:
                 if self.logger:
                     self.logger.info(
-                        "Couldn't upload {}. Check error_list.json".format(file["path"])
-                    )
+                        "Couldn't upload {}. Check error_list.json".format(
+                            file["path"]))
                 self.addErrorFile(file)
                 if pbar0:
                     pbar0.update(1)
@@ -865,8 +851,7 @@ class NetCDFSWAN(S3NetCDF):
             # Remove datetime from dict since we don't want to upload this
             dt = _sub.pop("datetime")
             sIndex, eIndex = NetCDFSWAN.getDatetimeIndex(
-                self.datetime, dt
-            )  # Get datetime index
+                self.datetime, dt)  # Get datetime index
 
             for key in _sub:  # Loop for each variable(e.g Windv_x and Windv_y)
                 array = _sub[key]
@@ -928,7 +913,10 @@ class NetCDFSWAN(S3NetCDF):
             _files = list(filter(lambda file: file["name"] == fileKey, files))
 
             # Initialize array
-            fp = np.memmap(filename, dtype="float32", mode="w+", shape=(nnode, ntime))
+            fp = np.memmap(filename,
+                           dtype="float32",
+                           mode="w+",
+                           shape=(nnode, ntime))
 
             if pbar is not None:
                 pbar.reset(total=len(_files))
@@ -985,7 +973,10 @@ class NetCDFSWAN(S3NetCDF):
         datPath = os.path.join(self.cacheLocation, "{}.dat".format(vname))
 
         # Initialize array
-        np.memmap(datPath, dtype="float16", mode="w+", shape=(nnode, npart, ntime))
+        np.memmap(datPath,
+                  dtype="float16",
+                  mode="w+",
+                  shape=(nnode, npart, ntime))
 
         cacheLocation = "../data"
         s3Prefix = "partitionSWANv6"
@@ -1009,9 +1000,10 @@ class NetCDFSWAN(S3NetCDF):
             if not os.path.exists(file):
                 download(bucketName, s3Prefix, cacheLocation, key)
 
-            fp = np.memmap(
-                datPath, dtype="float16", mode="r+", shape=(nnode, npart, ntime)
-            )
+            fp = np.memmap(datPath,
+                           dtype="float16",
+                           mode="r+",
+                           shape=(nnode, npart, ntime))
 
             _sub = NetCDFSWAN.load(file)
             dt = _sub.pop("datetime")
@@ -1060,16 +1052,19 @@ class NetCDFSWAN(S3NetCDF):
             :param i:
 
             """
-            fp = np.memmap(
-                datPath, dtype="float16", mode="r", shape=(nnode, npart, ntime)
-            )
+            fp = np.memmap(datPath,
+                           dtype="float16",
+                           mode="r",
+                           shape=(nnode, npart, ntime))
             _slice = slice(i, np.minimum(nnode, i + gnode))
             with S3NetCDF(obj) as netcdf:
                 netcdf[groupName, vname, _slice] = fp[_slice]
 
         if pbar:
             pbar.update(32)
-        result_ids = [work.remote(i) for i in np.arange(32 * 300, nnode, gnode)]
+        result_ids = [
+            work.remote(i) for i in np.arange(32 * 300, nnode, gnode)
+        ]
         while len(result_ids):
             done_id, result_ids = ray.wait(result_ids)
             count = ray.get(done_id[0])
@@ -1089,9 +1084,8 @@ def getKeys(s3Prefix, variable):
     keys = []
     for year in years:
         for month in months:
-            keys.append(
-                "{}/{}/{}/results/{}.mat".format(s3Prefix, year, month, variable)
-            )
+            keys.append("{}/{}/{}/results/{}.mat".format(
+                s3Prefix, year, month, variable))
     return keys
 
 
@@ -1125,6 +1119,7 @@ def hook(t):
     :param t:
 
     """
+
     def inner(bytes_amount):
         """
 

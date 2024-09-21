@@ -24,9 +24,8 @@ def getKeys(variable):
     keys = []
     for year in years:
         for month in months:
-            keys.append(
-                "{}/{}/{}/results/{}.mat".format(s3Prefix, year, month, variable)
-            )
+            keys.append("{}/{}/{}/results/{}.mat".format(
+                s3Prefix, year, month, variable))
     return keys
 
 
@@ -56,6 +55,7 @@ def hook(t):
     :param t:
 
     """
+
     def inner(bytes_amount):
         """
 
