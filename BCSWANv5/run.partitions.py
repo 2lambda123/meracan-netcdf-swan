@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     input = {
         "name": "SWANv6",
-        "swanFolder": '../data',
+        "swanFolder": "../data",
         "bucket": "uvic-bcwave",
         "showProgress": True,
         "memorySize": 100,
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         "localOnly": False,
         "credentials": {
             "profile_name": "jcousineau",
-        }
+        },
     }
     # var="hspt"
     # var="tppt"

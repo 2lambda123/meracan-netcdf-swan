@@ -19,7 +19,8 @@ def getKeys(variable):
     for year in years:
         for month in months:
             keys.append(
-                "{}/{}/{}/results/{}.mat".format(s3Prefix, year, month, variable))
+                "{}/{}/{}/results/{}.mat".format(s3Prefix, year, month, variable)
+            )
     return keys
 
 
@@ -36,18 +37,19 @@ def getCachePath(key):
 def hook(t):
     def inner(bytes_amount):
         t.update(bytes_amount)
+
     return inner
 
 
 def downloadWithProgress(key):
     session = boto3.Session(profile_name="jcousineau")
-    s3 = session.client('s3')
+    s3 = session.client("s3")
     filepath = getCachePath(key)
     file_object = s3.get_object(Bucket=bucketName, Key=key)
     name = file_object.get("name")
     filesize = file_object.get("ContentLength")
-    with tqdm(total=filesize, unit='B', unit_scale=True, desc=key) as t:
-        with open(filepath, 'wb') as data:
+    with tqdm(total=filesize, unit="B", unit_scale=True, desc=key) as t:
+        with open(filepath, "wb") as data:
             s3.download_fileobj(bucketName, key, data, Callback=hook(t))
     return True
 
