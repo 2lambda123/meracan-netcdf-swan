@@ -16,6 +16,11 @@ months = ["{0:02d}".format(x) for x in range(1, 13)]
 
 
 def getKeys(variable):
+    """
+
+    :param variable: 
+
+    """
     keys = []
     for year in years:
         for month in months:
@@ -26,23 +31,48 @@ def getKeys(variable):
 
 
 def getKey(self, filepath):
+    """
+
+    :param filepath: 
+
+    """
     path = os.path.relpath(filepath, cacheLocation)
     return os.path.join(s3Prefix, path)
 
 
 def getCachePath(key):
+    """
+
+    :param key: 
+
+    """
     path = os.path.relpath(key, s3Prefix)
     return os.path.join(cacheLocation, path)
 
 
 def hook(t):
+    """
+
+    :param t: 
+
+    """
     def inner(bytes_amount):
+        """
+
+        :param bytes_amount: 
+
+        """
         t.update(bytes_amount)
 
     return inner
 
 
 def downloadWithProgress(key):
+    """
+
+    :param key: 
+
+    """
     session = boto3.Session(profile_name="jcousineau")
     s3 = session.client("s3")
     filepath = getCachePath(key)
@@ -56,6 +86,7 @@ def downloadWithProgress(key):
 
 
 def run():
+    """ """
     # variable="PTHSIGN"
     # variable="PTRTP"
     variable = "PTDIR"
